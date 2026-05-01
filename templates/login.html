@@ -7,14 +7,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg: #060914;
-            --panel: rgba(15, 21, 38, 0.88);
-            --border: rgba(255,255,255,0.1);
-            --text: #f4f7ff;
-            --muted: #9aa6c1;
-            --accent: #d8b95c;
-            --accent-strong: #f6e1a7;
-            --radius: 26px;
+            --bg-light: #f9f8f6;
+            --white: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --accent-warm: #c85a3a;
+            --accent-blue: #3b82f6;
+            --border-light: #e5e7eb;
+            --shadow-soft: rgba(0, 0, 0, 0.08);
+            --radius: 14px;
             --transition: 240ms ease;
         }
 
@@ -26,8 +27,8 @@
             margin: 0;
             min-height: 100vh;
             font-family: 'Inter', system-ui, sans-serif;
-            color: var(--text);
-            background-image: linear-gradient(180deg, rgba(5, 7, 19, 0.72), rgba(5, 7, 19, 0.72)), url('/static/login-bg.png');
+            color: var(--text-dark);
+            background-image: linear-gradient(180deg, rgba(249, 248, 246, 0.92), rgba(249, 248, 246, 0.88)), url('/static/login-bg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -37,208 +38,536 @@
             overflow: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 80% 20%, rgba(216, 185, 92, 0.08), transparent 20%);
-            pointer-events: none;
-        }
-
-        .login-card {
+        .login-container {
             position: relative;
-            width: min(100%, 460px);
-            padding: 44px 42px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
-            overflow: hidden;
+            width: min(100%, 1100px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            padding: 40px;
+            align-items: center;
+            justify-items: start;
         }
 
-        .login-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 24%, transparent 76%, rgba(255,255,255,0.04));
+        /* Left Panel: Form */
+        .form-panel {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 420px;
         }
 
         .brand {
-            margin-bottom: 18px;
-            display: inline-flex;
-            align-items: baseline;
-            gap: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .brand-dot {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 999px;
-            background: linear-gradient(135deg, rgba(216, 185, 92, 0.95), rgba(255, 220, 135, 0.75));
-            box-shadow: 0 0 18px rgba(216, 185, 92, 0.45);
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            box-shadow: 0 0 12px rgba(200, 90, 58, 0.3);
+        }
+
+        .brand-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-warm);
         }
 
         h1 {
-            margin: 0;
-            font-size: 2.4rem;
+            margin: 0 0 12px 0;
+            font-size: 2.6rem;
+            font-weight: 700;
             line-height: 1.05;
-            letter-spacing: -0.04em;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #1f2937, #c85a3a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        p.description {
-            margin: 14px 0 34px;
-            color: var(--muted);
-            line-height: 1.8;
-            max-width: 390px;
+        .subtitle {
+            margin: 0 0 32px 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
         .messages {
             display: grid;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .message {
-            padding: 16px 20px;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
-            color: var(--text);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            background: #f3f4f6;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .message.success {
-            color: var(--accent-strong);
-            border-color: rgba(216, 185, 92, 0.28);
-            background: rgba(216, 185, 92, 0.09);
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #065f46;
         }
 
         .message.error {
-            color: #f3bec8;
-            border-color: rgba(255, 104, 129, 0.22);
-            background: rgba(255, 104, 129, 0.09);
+            background: #fef2f2;
+            border-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            color: var(--muted);
-            letter-spacing: 0.14em;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            color: var(--text-muted);
         }
 
         input {
             width: 100%;
-            padding: 16px 18px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.04);
-            color: var(--text);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            background: var(--white);
+            color: var(--text-dark);
             font-size: 1rem;
+            font-family: 'Inter', system-ui, sans-serif;
             outline: none;
             transition: all var(--transition);
         }
 
         input::placeholder {
-            color: rgba(255,255,255,0.45);
+            color: #a3a3a3;
         }
 
         input:focus {
-            border-color: rgba(216, 185, 92, 0.55);
-            box-shadow: 0 0 0 8px rgba(216, 185, 92, 0.08);
-            transform: translateY(-1px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08);
+            background: #f9fafb;
         }
 
         .login-btn {
-            width: 100%;
-            padding: 16px 22px;
-            margin-top: 10px;
-            border-radius: 18px;
+            padding: 14px 20px;
+            margin-top: 8px;
+            border-radius: var(--radius);
             border: none;
-            background: linear-gradient(135deg, rgba(216, 185, 92, 0.22), rgba(255, 255, 255, 0.08));
-            color: var(--text);
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            color: var(--white);
             font-weight: 700;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all var(--transition);
-            box-shadow: 0 16px 40px rgba(216, 185, 92, 0.18);
+            box-shadow: 0 8px 20px rgba(200, 90, 58, 0.25);
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, rgba(216, 185, 92, 0.35), rgba(255, 255, 255, 0.1));
+            box-shadow: 0 12px 28px rgba(200, 90, 58, 0.35);
+            background: linear-gradient(135deg, #b84a2a, #cf6a42);
         }
 
         .demo-note {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            color: var(--muted);
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-muted);
             text-align: center;
-            font-size: 0.88rem;
-            line-height: 1.8;
+            font-size: 0.85rem;
+            line-height: 1.6;
         }
 
         .demo-note strong {
-            color: var(--accent-strong);
+            color: var(--accent-warm);
             font-weight: 600;
         }
 
+        /* Right Panel: Branding */
+        .branding-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .branding-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 36px 32px;
+            box-shadow: 0 8px 24px var(--shadow-soft);
+        }
+
+        .branding-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(200, 90, 58, 0.1), rgba(59, 130, 246, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .branding-card h2 {
+            margin: 0 0 12px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .branding-card p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .feature-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: rgba(200, 90, 58, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--accent-warm);
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .login-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 32px;
+            }
+
+            .branding-panel {
+                max-width: 100%;
+            }
+
+            .form-panel {
+                max-width: 100%;
+            }
+        }
+
         @media (max-width: 640px) {
-            .login-card {
-                margin: 24px;
-                padding: 34px 24px;
+            .login-container {
+                gap: 24px;
+                padding: 20px;
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
+
+            .branding-card {
+                padding: 28px 24px;
+            }
+
+            input {
+                padding: 12px 14px;
+                font-size: 16px;
+            }
+
+            .login-btn {
+                padding: 12px 18px;
+            }
+
+            .chatbot-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .chatbot-popup {
+                width: 90vw;
+                max-width: 320px;
+                height: 500px;
+            }
+        }
+
+        /* Chatbot Widget */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(200, 90, 58, 0.3);
+            transition: all var(--transition);
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(200, 90, 58, 0.4);
+        }
+
+        .chatbot-toggle.active {
+            background: linear-gradient(135deg, #b84a2a, #cf6a42);
+        }
+
+        .chatbot-popup {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 560px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 300ms ease;
+        }
+
+        .chatbot-popup.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .chatbot-body {
+            flex: 0 1 auto;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 250px;
+        }
+
+        .chatbot-message {
+            background: var(--accent-blue-light);
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .chatbot-options {
+            padding: 16px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chatbot-option {
+            padding: 12px 16px;
+            border: 1px solid var(--accent-warm);
+            background: var(--white);
+            color: var(--accent-warm);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: left;
+        }
+
+        .chatbot-option:hover {
+            background: var(--accent-warm);
+            color: var(--white);
+            transform: translateX(4px);
         }
     </style>
 </head>
 <body>
-<div class="login-card">
-    <div class="brand">
-        <span class="brand-dot"></span>
-        <div>
-            <h1>Campus Portal</h1>
+<div class="login-container">
+    <!-- Left Panel: Login Form -->
+    <div class="form-panel">
+        <div class="brand">
+            <span class="brand-dot"></span>
+            <span class="brand-text">Campus Portal</span>
         </div>
-    </div>
-    <p class="description">Elegant issue reporting for campus facilities with modern access control.</p>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="messages">
-            {% for category, message in messages %}
-                <div class="message {{ category }}">{{ message }}</div>
-            {% endfor %}
+        <h1>Issue Tracker</h1>
+        <p class="subtitle">Streamlined issue reporting and campus facilities management.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="user_id">Campus ID or Email</label>
+                <input type="text" id="user_id" name="user_id" placeholder="student123@college.edu" required autofocus>
             </div>
-        {% endif %}
-    {% endwith %}
 
-    <form method="POST">
-        <div class="form-group">
-            <label for="user_id">ID or Email</label>
-            <input type="text" id="user_id" name="user_id" placeholder="student.id@college.edu" required autofocus>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+
+            <div class="demo-note">
+                <strong>Demo:</strong> any ID and password will work
+            </div>
+        </form>
+    </div>
+
+    <!-- Right Panel: Branding & Context -->
+    <div class="branding-panel">
+        <div class="branding-card">
+            <div class="branding-icon">🏫</div>
+            <h2>Welcome</h2>
+            <p>Report facility issues, track maintenance requests, and connect with campus operations—all in one elegant platform.</p>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-check">✓</div>
+                    <span>Fast issue reporting</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">✓</div>
+                    <span>Photo documentation</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">✓</div>
+                    <span>Real-time tracking</span>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
-        </div>
-
-        <button type="submit" class="login-btn">Sign In</button>
-    </form>
-
-    <div class="demo-note">
-        <strong>Demo mode:</strong> enter any valid credentials to continue.
     </div>
 </div>
+
+<!-- Chatbot Widget -->
+<div class="chatbot-widget" id="chatbotWidget">
+    <button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">💬</button>
+    <div class="chatbot-popup" id="chatbotPopup">
+        <div class="chatbot-header">Campus Assistant</div>
+        <div class="chatbot-body">
+            <div class="chatbot-message">👋 Hi there! How can I assist you today?</div>
+        </div>
+        <div class="chatbot-options">
+            <button class="chatbot-option" onclick="handleChatOption('report')">📋 How to report an issue</button>
+            <button class="chatbot-option" onclick="handleChatOption('faq')">❓ Frequently Asked Questions</button>
+            <button class="chatbot-option" onclick="handleChatOption('support')">📞 Contact Support</button>
+            <button class="chatbot-option" onclick="handleChatOption('guide')">📖 Getting Started Guide</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleChatbot() {
+    const popup = document.getElementById('chatbotPopup');
+    const toggle = document.getElementById('chatbotToggle');
+    popup.classList.toggle('active');
+    toggle.classList.toggle('active');
+}
+
+function handleChatOption(option) {
+    const body = document.querySelector('.chatbot-body');
+    const messages = body.querySelectorAll('.chatbot-message');
+    
+    // Remove previous response if any
+    if (messages.length > 1) {
+        messages[1].remove();
+    }
+    
+    const responses = {
+        report: "To report an issue, simply log in to your account and navigate to the 'Submit a New Report' form. Fill in the details, select a category and location, upload photos if needed, and click submit. Your report will be tracked in real-time!",
+        faq: "Common questions: Q1: Can I upload multiple photos? Yes, up to 5 photos per report. Q2: What file formats are supported? JPG, PNG, GIF, and WebP. Q3: Can I edit my reports? Contact support to modify existing reports.",
+        support: "For support, you can reach out to our team at support@campus.edu or use the chat option during business hours (Mon-Fri, 9AM-5PM). We typically respond within 2 hours.",
+        guide: "Welcome to Campus Portal! 1) Create your account 2) Log in 3) Navigate to the portal 4) Submit issue reports 5) Track your submissions. Need help? Our support team is ready to assist!"
+    };
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chatbot-message';
+    messageDiv.textContent = responses[option] || 'How can I help you further?';
+    body.appendChild(messageDiv);
+    body.scrollTop = body.scrollHeight;
+}
+</script>
 </body>
 </html>

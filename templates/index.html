@@ -3,111 +3,837 @@
 <head>
     <title>Campus Issue Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-light: #f9f8f6;
+            --white: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --accent-warm: #c85a3a;
+            --accent-blue: #3b82f6;
+            --accent-blue-light: #e0e7ff;
+            --border-light: #e5e7eb;
+            --shadow-soft: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.12);
+            --radius: 14px;
+            --radius-lg: 20px;
+            --transition: 240ms ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f9f8f6 0%, #f3f1ed 100%);
+            overflow-x: hidden;
+        }
+
+        body {
+            padding: 32px 20px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header/Hero Section */
+        .page-header {
+            margin-bottom: 48px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(200, 90, 58, 0.1), rgba(59, 130, 246, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #1f2937, #c85a3a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-text p {
+            margin: 4px 0 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .user-name {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #c85a3a, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--accent-warm);
+            background: var(--white);
+            color: var(--accent-warm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-warm);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(200, 90, 58, 0.25);
+        }
+
+        .header-description {
+            margin-top: 24px;
+        }
+
+        .header-description h2 {
+            margin: 0 0 12px;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            color: var(--text-dark);
+        }
+
+        .header-description p {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: 0 4px 16px var(--shadow-soft);
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 32px var(--shadow-medium);
+            border-color: var(--accent-blue);
+        }
+
+        .card h2 {
+            margin: 0 0 28px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(200, 90, 58, 0.1), rgba(59, 130, 246, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Messages */
+        .messages {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            background: #f3f4f6;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            border-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .form-field input::placeholder,
+        .form-field textarea::placeholder {
+            color: #a3a3a3;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08);
+            background: #f9fafb;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        /* Photo Upload Section */
+        .photo-upload-section {
+            border: 2px dashed var(--accent-blue);
+            border-radius: var(--radius);
+            padding: 20px;
+            background: var(--accent-blue-light);
+            margin: 0;
+        }
+
+        .photo-upload-section input[type="file"] {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            padding: 8px 0;
+        }
+
+        .photo-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .photo-upload-hint {
+            margin: 8px 0 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            border: none;
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            color: var(--white);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 8px 20px rgba(200, 90, 58, 0.25);
+            margin-top: 8px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(200, 90, 58, 0.35);
+            background: linear-gradient(135deg, #b84a2a, #cf6a42);
+        }
+
+        /* Issues List */
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .issue-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .issue-list::-webkit-scrollbar-track {
+            background: var(--accent-blue-light);
+            border-radius: 999px;
+        }
+
+        .issue-list::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 999px;
+            transition: background var(--transition);
+        }
+
+        .issue-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-warm);
+        }
+
+        .issue-card {
+            background: var(--accent-blue-light);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius);
+            padding: 16px;
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .issue-card:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .issue-card h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .issue-card p {
+            margin: 0 0 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .issue-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .issue-photos img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all var(--transition);
+        }
+
+        .issue-photos img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .issue-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .issue-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(200, 90, 58, 0.3);
+            background: rgba(200, 90, 58, 0.08);
+            color: var(--accent-warm);
+        }
+
+        .issue-tag.location {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.08);
+            color: var(--accent-blue);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-user {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-description h2 {
+                font-size: 1.6rem;
+            }
+
+            .card h2 {
+                font-size: 1.3rem;
+            }
+
+            form {
+                gap: 16px;
+            }
+
+            .issue-list {
+                max-height: 500px;
+            }
+
+            .chatbot-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .chatbot-popup {
+                width: 90vw;
+                max-width: 320px;
+                height: 500px;
+            }
+        }
+
+        /* Chatbot Widget */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(200, 90, 58, 0.3);
+            transition: all var(--transition);
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(200, 90, 58, 0.4);
+        }
+
+        .chatbot-toggle.active {
+            background: linear-gradient(135deg, #b84a2a, #cf6a42);
+        }
+
+        .chatbot-popup {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 560px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 300ms ease;
+        }
+
+        .chatbot-popup.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #c85a3a, #d97a52);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .chatbot-body {
+            flex: 0 1 auto;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 250px;
+        }
+
+        .chatbot-message {
+            background: var(--accent-blue-light);
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .chatbot-options {
+            padding: 16px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chatbot-option {
+            padding: 12px 16px;
+            border: 1px solid var(--accent-warm);
+            background: var(--white);
+            color: var(--accent-warm);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: left;
+        }
+
+        .chatbot-option:hover {
+            background: var(--accent-warm);
+            color: var(--white);
+            transform: translateX(4px);
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="page-shell">
-        <section class="hero">
-            <div>
-                <p style="margin:0; color:#5c6975; letter-spacing:0.1em; text-transform:uppercase; font-size:0.8rem;">Campus Portal</p>
-                <h1>Report issues with clarity and ease.</h1>
-                <p>Submit facility feedback, track issues instantly, and keep campus spaces clean and comfortable for everyone.</p>
-            </div>
-            <div style="text-align: right;">
-                <p style="margin: 0; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Session</p>
-                <p style="margin: 4px 0 0; font-size: 1rem; font-weight: 600; background: linear-gradient(135deg, #00d4ff, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ session.user_id }}</p>
-                <a href="/logout" style="display: inline-block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(192, 38, 211, 0.15)); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; text-decoration: none; color: #00d4ff; font-size: 0.85rem; border: 1px solid #00d4ff; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);" onmouseover="this.style.boxShadow='0 0 30px rgba(192, 38, 211, 0.4)'; this.style.borderColor='#c026d3'; this.style.color='#c026d3';" onmouseout="this.style.boxShadow='0 0 15px rgba(0, 212, 255, 0.2)'; this.style.borderColor='#00d4ff'; this.style.color='#00d4ff';">Logout</a>
-            </div>
-        </section>
-
-        <div class="grid">
-            <section class="card">
-                <h2>Submit a new report</h2>
-
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div class="messages">
-                        {% for category, message in messages %}
-                            <div class="message {{ category }}">{{ message }}</div>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
-
-                <form action="/submit" method="POST" enctype="multipart/form-data">
-                    <div class="form-field">
-                        <input type="text" name="title" placeholder="Issue Title" required>
-                    </div>
-
-                    <div class="form-field">
-                        <textarea name="description" placeholder="Describe the issue" required></textarea>
-                    </div>
-
-                    <div class="form-field">
-                        <select name="category" required>
-                            <option value="">Select category</option>
-                            <option value="Cleanliness">Cleanliness</option>
-                            <option value="Electrical">Electrical</option>
-                            <option value="WiFi">WiFi</option>
-                        </select>
-                    </div>
-
-                    <div class="form-field">
-                        <select name="location" required>
-                            <option value="">Select location</option>
-                            <option value="CS IT Block">CS IT Block</option>
-                            <option value="Chanakya Block">Chanakya Block</option>
-                            <option value="Management Block">Management Block</option>
-                            <option value="Btech Auditorium">Btech Auditorium</option>
-                            <option value="Mechanical Block">Mechanical Block</option>
-                            <option value="Civil Block">Civil Block</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-field" style="border: 2px dashed #dde2ea; border-radius: 16px; padding: 16px; background: #fafbfc;">
-                        <label for="photos" style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-color);">
-                            📸 Upload Photos (Max 5, 8MB per file)
-                        </label>
-                        <input type="file" id="photos" name="photos" multiple accept="image/*" style="width: 100%; padding: 8px 0; cursor: pointer;">
-                        <p style="margin: 8px 0 0; font-size: 0.8rem; color: var(--muted-color);">Supported: JPG, PNG, GIF, WebP</p>
-                    </div>
-
-                    <button type="submit">Submit report</button>
-                </form>
-            </section>
-
-            <section class="card">
-                <h2>Recent issues</h2>
-                <div class="issue-list">
-                    {% if issues %}
-                        {% for issue in issues %}
-                            <article class="issue-card">
-                                <h3>{{ issue.title }}</h3>
-                                <p>{{ issue.description }}</p>
-                                {% if issue.photos %}
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 14px 0;">
-                                    {% for photo in issue.photos.split(',') %}
-                                        {% if photo %}
-                                            <img src="{{ url_for('static', filename='uploads/' + photo) }}" alt="Issue photo" style="width: 100%; height: 120px; object-fit: cover; border-radius: 12px; cursor: pointer;" onclick="this.style.maxWidth = this.style.maxWidth ? '' : '100vw';">
-                                        {% endif %}
-                                    {% endfor %}
-                                    </div>
-                                {% endif %}
-                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                    <span class="issue-chip">{{ issue.category }}</span>
-                                    <span class="issue-chip" style="background: #f0e8ff; color: #7c3aed; border-color: rgba(124, 58, 237, 0.18);">📍 {{ issue.location }}</span>
-                                </div>
-                            </article>
-                        {% endfor %}
-                    {% else %}
-                        <p class="empty-state">No issues reported yet. Submit the first report to see it here.</p>
-                    {% endif %}
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-top">
+            <div class="header-brand">
+                <div class="header-icon">🏫</div>
+                <div class="header-text">
+                    <h1>Campus Portal</h1>
+                    <p>Facility Issue Tracker</p>
                 </div>
-            </section>
+            </div>
+            <div class="header-user">
+                <div class="user-info">
+                    <span class="user-label">Logged In</span>
+                    <span class="user-name">{{ session.user_id }}</span>
+                </div>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="header-description">
+            <h2>Report Issues & Improve Campus</h2>
+            <p>Submit facility feedback, track maintenance requests, and collaborate with campus operations to keep our facilities in top condition.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-grid">
+        <!-- Left: Submit Form -->
+        <div class="card">
+            <h2>
+                <div class="card-icon">✍️</div>
+                Submit a New Report
+            </h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="/submit" method="POST" enctype="multipart/form-data">
+                <div class="form-field">
+                    <label for="title">Issue Title</label>
+                    <input type="text" id="title" name="title" placeholder="Brief title of the issue" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Describe the issue in detail..." required></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Cleanliness">🧹 Cleanliness</option>
+                        <option value="Electrical">⚡ Electrical</option>
+                        <option value="WiFi">📡 WiFi</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="location">Location</label>
+                    <select id="location" name="location" required>
+                        <option value="">Select a location</option>
+                        <option value="CS IT Block">🖥️ CS IT Block</option>
+                        <option value="Chanakya Block">📚 Chanakya Block</option>
+                        <option value="Management Block">💼 Management Block</option>
+                        <option value="Btech Auditorium">🎤 Btech Auditorium</option>
+                        <option value="Mechanical Block">⚙️ Mechanical Block</option>
+                        <option value="Civil Block">🏗️ Civil Block</option>
+                        <option value="Other">📍 Other</option>
+                    </select>
+                </div>
+
+                <div class="form-field photo-upload-section">
+                    <label for="photos" class="photo-upload-label">
+                        📸 Upload Photos
+                    </label>
+                    <input type="file" id="photos" name="photos" multiple accept="image/*">
+                    <p class="photo-upload-hint">Max 5 photos, 8MB per file • JPG, PNG, GIF, WebP</p>
+                </div>
+
+                <button type="submit">Submit Report</button>
+            </form>
+        </div>
+
+        <!-- Right: Recent Issues -->
+        <div class="card">
+            <h2>
+                <div class="card-icon">📋</div>
+                Recent Reports
+            </h2>
+
+            <div class="issue-list">
+                {% if issues %}
+                    {% for issue in issues %}
+                        <div class="issue-card">
+                            <h3>{{ issue.title }}</h3>
+                            <p>{{ issue.description }}</p>
+                            
+                            {% if issue.photos %}
+                                <div class="issue-photos">
+                                {% for photo in issue.photos.split(',') %}
+                                    {% if photo %}
+                                        <img src="{{ url_for('static', filename='uploads/' + photo) }}" alt="Issue photo" title="Click to view full size">
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="issue-tags">
+                                <span class="issue-tag">{{ issue.category }}</span>
+                                <span class="issue-tag location">📍 {{ issue.location }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No issues reported yet.<br>Submit the first report to get started!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Chatbot Widget -->
+<div class="chatbot-widget" id="chatbotWidget">
+    <button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">💬</button>
+    <div class="chatbot-popup" id="chatbotPopup">
+        <div class="chatbot-header">Campus Assistant</div>
+        <div class="chatbot-body">
+            <div class="chatbot-message">👋 Hi there! How can I assist you today?</div>
+        </div>
+        <div class="chatbot-options">
+            <button class="chatbot-option" onclick="handleChatOption('report')">📋 How to report an issue</button>
+            <button class="chatbot-option" onclick="handleChatOption('faq')">❓ Frequently Asked Questions</button>
+            <button class="chatbot-option" onclick="handleChatOption('support')">📞 Contact Support</button>
+            <button class="chatbot-option" onclick="handleChatOption('tracking')">📍 Track My Reports</button>
         </div>
     </div>
 </div>
+
+<script>
+function toggleChatbot() {
+    const popup = document.getElementById('chatbotPopup');
+    const toggle = document.getElementById('chatbotToggle');
+    popup.classList.toggle('active');
+    toggle.classList.toggle('active');
+}
+
+function handleChatOption(option) {
+    const body = document.querySelector('.chatbot-body');
+    const messages = body.querySelectorAll('.chatbot-message');
+    
+    // Remove previous response if any
+    if (messages.length > 1) {
+        messages[1].remove();
+    }
+    
+    const responses = {
+        report: "To report an issue, fill in the 'Submit a New Report' form on this page. Include a title, detailed description, select the category (Cleanliness, Electrical, WiFi), choose the location, and upload up to 5 photos. Click 'Submit Report' and your issue will be tracked in real-time!",
+        faq: "Q: Can I upload multiple photos? A: Yes, up to 5 photos per report. Q: What file formats work? A: JPG, PNG, GIF, WebP. Q: Can I edit reports? A: Contact support for modifications. Q: How long for resolution? A: Typically 5-7 business days.",
+        support: "For technical support or issues, reach out to support@campus.edu or call ext. 5555. Available Mon-Fri, 9AM-5PM. Response time: usually within 2 hours. For urgent matters, visit the help desk in Management Block.",
+        tracking: "Your submitted reports appear in the 'Recent Reports' panel on the right. Each report shows the title, description, category, location, and photos. You'll receive updates as your issue is being addressed by the facilities team."
+    };
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chatbot-message';
+    messageDiv.textContent = responses[option] || 'How can I help you further?';
+    body.appendChild(messageDiv);
+    body.scrollTop = body.scrollHeight;
+}
+</script>
 </body>
 </html>
