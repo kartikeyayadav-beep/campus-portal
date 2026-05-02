@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, jsonify
 import os
 import sqlite3
+from datetime import datetime
 from functools import wraps
 from werkzeug.utils import secure_filename
 
@@ -14,6 +15,10 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, "static/uploads")
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 MAX_PHOTOS = 5
 MAX_FILE_SIZE = 8 * 1024 * 1024  # 8MB
+
+# Admin credentials
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
 
 # Create upload folder
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -29,8 +34,17 @@ def allowed_file(filename):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
+        if "user_id" not in session or session.get("user_type") != "student":
             return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session or session.get("user_type") != "admin":
+            return redirect("/admin/login")
         return f(*args, **kwargs)
     return decorated_function
 
@@ -44,6 +58,7 @@ def get_db_connection():
 
 def init_db():
     with get_db_connection() as conn:
+        # Create issues table with status column
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS issues (
@@ -52,19 +67,51 @@ def init_db():
                 description TEXT NOT NULL,
                 category TEXT NOT NULL,
                 location TEXT NOT NULL,
-                photos TEXT
+                photos TEXT,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
+        
+        # Create chat messages table
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        
+        # Add status column if it doesn't exist (migration)
+        try:
+            conn.execute("ALTER TABLE issues ADD COLUMN status TEXT DEFAULT 'pending'")
+        except:
+            pass
+        
+        try:
+            conn.execute("ALTER TABLE issues ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+        except:
+            pass
+        
         conn.commit()
 
 
-def load_issues():
+def load_issues(status=None):
     init_db()
     with get_db_connection() as conn:
-        rows = conn.execute(
-            "SELECT title, description, category, location, photos FROM issues ORDER BY id DESC"
-        ).fetchall()
+        if status:
+            rows = conn.execute(
+                "SELECT id, title, description, category, location, photos, status, created_at FROM issues WHERE status = ? ORDER BY created_at DESC",
+                (status,)
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT id, title, description, category, location, photos, status, created_at FROM issues ORDER BY created_at DESC"
+            ).fetchall()
         return [dict(row) for row in rows]
 
 
@@ -72,10 +119,57 @@ def save_issue(issue):
     init_db()
     with get_db_connection() as conn:
         conn.execute(
-            "INSERT INTO issues (title, description, category, location, photos) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO issues (title, description, category, location, photos, status) VALUES (?, ?, ?, ?, ?, 'pending')",
             (issue["title"], issue["description"], issue["category"], issue["location"], issue.get("photos", "")),
         )
         conn.commit()
+
+
+def update_issue_status(issue_id, status):
+    init_db()
+    with get_db_connection() as conn:
+        conn.execute(
+            "UPDATE issues SET status = ? WHERE id = ?",
+            (status, issue_id)
+        )
+        conn.commit()
+
+
+def delete_issue(issue_id):
+    init_db()
+    with get_db_connection() as conn:
+        conn.execute("DELETE FROM issues WHERE id = ?", (issue_id,))
+        conn.commit()
+
+
+def get_issue_by_id(issue_id):
+    init_db()
+    with get_db_connection() as conn:
+        row = conn.execute(
+            "SELECT id, title, description, category, location, photos, status FROM issues WHERE id = ?",
+            (issue_id,)
+        ).fetchone()
+        return dict(row) if row else None
+
+
+def save_chat_message(username, message):
+    init_db()
+    with get_db_connection() as conn:
+        conn.execute(
+            "INSERT INTO chat_messages (username, message) VALUES (?, ?)",
+            (username, message)
+        )
+        conn.commit()
+
+
+def get_chat_messages(limit=50):
+    init_db()
+    with get_db_connection() as conn:
+        rows = conn.execute(
+            "SELECT username, message, created_at FROM chat_messages ORDER BY created_at DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+        return [dict(row) for row in reversed(rows)]
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -89,17 +183,88 @@ def login():
             return redirect("/login")
 
         session["user_id"] = user_id
+        session["user_type"] = "student"
         flash(f"Welcome, {user_id}!", "success")
         return redirect("/")
 
     return render_template("login.html")
 
 
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["user_id"] = username
+            session["user_type"] = "admin"
+            flash("Welcome, Admin!", "success")
+            return redirect("/admin/dashboard")
+        else:
+            flash("Invalid admin credentials.", "error")
+            return redirect("/admin/login")
+
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/dashboard")
+@admin_required
+def admin_dashboard():
+    pending_issues = load_issues("pending")
+    completed_issues = load_issues("completed")
+    return render_template("admin_dashboard.html", pending_issues=pending_issues, completed_issues=completed_issues)
+
+
+@app.route("/admin/issue/<int:issue_id>/mark-done", methods=["POST"])
+@admin_required
+def mark_issue_done(issue_id):
+    update_issue_status(issue_id, "completed")
+    flash("Issue marked as completed.", "success")
+    return redirect("/admin/dashboard")
+
+
+@app.route("/admin/issue/<int:issue_id>/delete", methods=["POST"])
+@admin_required
+def delete_issue_route(issue_id):
+    delete_issue(issue_id)
+    flash("Issue deleted.", "success")
+    return redirect("/admin/dashboard")
+
+
 @app.route("/")
 @login_required
 def index():
-    issues = load_issues()
+    issues = load_issues("pending")
     return render_template("index.html", issues=issues)
+
+
+@app.route("/chat")
+@login_required
+def chat():
+    return render_template("chat.html")
+
+
+@app.route("/api/chat/messages")
+@login_required
+def get_messages():
+    messages = get_chat_messages()
+    return jsonify(messages)
+
+
+@app.route("/api/chat/send", methods=["POST"])
+@login_required
+def send_message():
+    data = request.get_json()
+    message = data.get("message", "").strip()
+    
+    if not message:
+        return jsonify({"error": "Message cannot be empty"}), 400
+    
+    username = session.get("user_id", "Anonymous")
+    save_chat_message(username, message)
+    
+    return jsonify({"status": "success", "message": "Message sent"})
 
 
 @app.route("/submit", methods=["POST"])

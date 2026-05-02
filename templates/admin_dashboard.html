@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Campus Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-light: #f9f8f6;
+            --white: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --accent-warm: #c85a3a;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --border-light: #e5e7eb;
+            --shadow-soft: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.12);
+            --radius: 14px;
+            --radius-lg: 20px;
+            --transition: 240ms ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f9f8f6 0%, #f3f1ed 100%);
+            overflow-x: hidden;
+        }
+
+        body {
+            padding: 32px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #1f2937, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-text p {
+            margin: 4px 0 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--accent-purple);
+            background: var(--white);
+            color: var(--accent-purple);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-purple);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(139, 92, 246, 0.25);
+        }
+
+        /* Messages */
+        .messages {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            background: #f3f4f6;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            border-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* Main Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .section-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 4px 16px var(--shadow-soft);
+            transition: all var(--transition);
+        }
+
+        .section-card:hover {
+            box-shadow: 0 12px 32px var(--shadow-medium);
+            border-color: var(--accent-purple);
+        }
+
+        .section-card h2 {
+            margin: 0 0 24px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Issues List */
+        .issues-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 650px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .issues-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .issues-list::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 999px;
+        }
+
+        .issues-list::-webkit-scrollbar-thumb {
+            background: var(--accent-purple);
+            border-radius: 999px;
+            transition: background var(--transition);
+        }
+
+        .issues-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-warm);
+        }
+
+        .issue-card {
+            background: #f9fafb;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--radius);
+            padding: 16px;
+            transition: all var(--transition);
+        }
+
+        .issue-card:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+            background: var(--white);
+        }
+
+        .issue-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .issue-card h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .issue-card p {
+            margin: 0 0 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .issue-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .issue-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.08);
+            color: var(--accent-purple);
+        }
+
+        .issue-tag.location {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.08);
+            color: var(--accent-blue);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn.mark-done {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .action-btn.mark-done:hover {
+            background: var(--success-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .section-card {
+                padding: 24px;
+            }
+
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .section-card h2 {
+                font-size: 1.3rem;
+            }
+
+            .issues-list {
+                max-height: 400px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-top">
+                <div class="header-brand">
+                    <div class="header-icon">🛡️</div>
+                    <div class="header-text">
+                        <h1>Admin Dashboard</h1>
+                        <p>Manage all campus issue requests</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="/logout" class="logout-btn">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Pending Issues -->
+            <div class="section-card">
+                <h2>
+                    <div class="section-icon">⏳</div>
+                    Pending Requests
+                </h2>
+                
+                {% if pending_issues %}
+                    <div class="issues-list">
+                        {% for issue in pending_issues %}
+                            <div class="issue-card">
+                                <div class="issue-card-header">
+                                    <div style="flex: 1;">
+                                        <h3>{{ issue.title }}</h3>
+                                        <p>{{ issue.description }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="issue-tags">
+                                    <span class="issue-tag">{{ issue.category }}</span>
+                                    <span class="issue-tag location">📍 {{ issue.location }}</span>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <form method="POST" action="/admin/issue/{{ issue.id }}/mark-done" style="flex: 1;">
+                                        <button type="submit" class="action-btn mark-done" style="width: 100%;">
+                                            ✓ Mark Done
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="/admin/issue/{{ issue.id }}/delete" style="flex: 1;" onsubmit="return confirm('Are you sure you want to delete this issue?');">
+                                        <button type="submit" class="action-btn delete" style="width: 100%;">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <p>No pending requests at the moment!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Completed Issues -->
+            <div class="section-card">
+                <h2>
+                    <div class="section-icon">✅</div>
+                    Completed Requests
+                </h2>
+                
+                {% if completed_issues %}
+                    <div class="issues-list">
+                        {% for issue in completed_issues %}
+                            <div class="issue-card">
+                                <div class="issue-card-header">
+                                    <div style="flex: 1;">
+                                        <h3>{{ issue.title }}</h3>
+                                        <p>{{ issue.description }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="issue-tags">
+                                    <span class="issue-tag">{{ issue.category }}</span>
+                                    <span class="issue-tag location">📍 {{ issue.location }}</span>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <form method="POST" action="/admin/issue/{{ issue.id }}/delete" style="flex: 1;" onsubmit="return confirm('Are you sure you want to delete this issue?');">
+                                        <button type="submit" class="action-btn delete" style="width: 100%;">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No completed requests yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
